@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<!--
+  ─────────────────────────────────────────────────────────────────────────
+  Popup UI — Webflow Breakpoint Cleaner
+  Toolbar popup rendered when the user clicks the extension icon. Shows
+  the additional breakpoints (xxl / xl / large) present on the current
+  site, their usage impact, and lets the user remove a selection.
+  Logic lives in popup.js.
+  ─────────────────────────────────────────────────────────────────────────
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; }
+    body { margin: 0; width: 300px; background: #1c1c1c; color: #e8e8e8; }
+
+    .header {
+      padding: 14px 18px; border-bottom: 1px solid #2a2a2a;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .header-icon { width: 32px; height: 32px; flex-shrink: 0; }
+    .header-text { display: flex; flex-direction: column; gap: 2px; }
+    .title { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+    .site-name { font-size: 11px; color: #666; }
+
+    .body { padding: 14px 18px 4px; }
+    .subtitle { margin: 0 0 12px; font-size: 12px; color: #9a9a9a; line-height: 1.5; }
+
+    .bp-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+    .bp-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; background: #262626; border: 1px solid #2e2e2e;
+      border-radius: 6px; cursor: pointer;
+      transition: background .1s ease, border-color .1s ease;
+    }
+    .bp-item:hover:not(.disabled) { background: #2c2c2c; border-color: #3a3a3a; }
+    .bp-item.disabled { opacity: .45; cursor: not-allowed; }
+    .bp-item.selected { background: #2e2e2e; border-color: #ffffff; }
+    .bp-item.selected:hover:not(.disabled) { background: #333333; }
+    .bp-info { flex: 1; min-width: 0; }
+    .bp-icon { width: 32px; height: 32px; flex-shrink: 0; object-fit: contain; opacity: 0.5; }
+    .bp-item:not(.disabled) .bp-icon { opacity: 1; }
+    .bp-name { font-size: 13px; font-weight: 500; display: block; }
+    .bp-impact { font-size: 11px; color: #888; display: block; }
+
+    .empty { padding: 10px 12px; font-size: 12px; color: #888; text-align: center; line-height: 1.6; }
+    .btn-reload { background: #262626; color: #ccc; }
+    .btn-reload:hover { background: #2c2c2c; }
+
+    .footer {
+      padding: 12px 18px; border-top: 1px solid #2a2a2a; margin-top: 10px;
+      display: flex; align-items: center; gap: 8px; justify-content: flex-end;
+    }
+    .hint { flex: 1; font-size: 11px; color: #888; }
+
+    .btn {
+      padding: 7px 14px; border-radius: 5px; border: none; cursor: pointer;
+      font-size: 12px; font-weight: 500; line-height: 1.2;
+      transition: background .1s ease;
+    }
+    .btn-danger { background: #E5484D; color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: #CE3B40; }
+    .btn-danger:disabled { background: #3a2424; color: #7a5858; cursor: not-allowed; }
+
+    .state { padding: 28px 20px; text-align: center; }
+    .spinner {
+      width: 28px; height: 28px; margin: 0 auto 12px;
+      border: 3px solid #2e2e2e; border-top-color: #146EF5;
+      border-radius: 50%; animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .icon-big { font-size: 28px; margin-bottom: 8px; line-height: 1; }
+    .icon-ok { color: #30A46C; }
+    .icon-ko { color: #E5484D; }
+    .icon-info { color: #888; }
+    .state-msg { margin: 0; font-size: 13px; color: #e0e0e0; font-weight: 500; }
+    .state-detail { margin: 6px 0 0; font-size: 11px; color: #888; line-height: 1.6; }
+    a { color: #146EF5; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .tab-section-label {
+      margin: 12px 16px 4px; font-size: 11px; font-weight: 600; color: #888;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .tab-list { padding: 4px 0 8px; }
+    .tab-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; cursor: pointer; border: none;
+      background: none; width: 100%; text-align: left; color: #e8e8e8;
+    }
+    .tab-item:hover { background: #2a2a2a; }
+    .tab-favicon { width: 16px; height: 16px; flex-shrink: 0; border-radius: 2px; }
+    .tab-title { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img class="header-icon" src="icons/icon-128.png" alt="">
+    <div class="header-text">
+      <h3 class="title">Webflow Breakpoint Cleaner</h3>
+      <span class="site-name" id="site-name"></span>
+    </div>
+  </div>
+
+  <div id="view-loading" class="state">
+    <div class="spinner"></div>
+    <p class="state-msg" id="loading-msg">Fetching breakpoints…</p>
+  </div>
+
+  <div id="view-select" hidden>
+    <div class="body">
+      <p class="subtitle">Select breakpoints to permanently remove.</p>
+      <ul class="bp-list" id="bp-list"></ul>
+    </div>
+    <div class="footer">
+      <span class="hint">&#9432; A backup is created automatically.</span>
+      <button class="btn btn-danger" id="confirm" disabled>Remove</button>
+    </div>
+  </div>
+
+  <div id="view-success" hidden>
+    <div class="state">
+      <div class="icon-big icon-ok">✓</div>
+      <p class="state-msg">Breakpoints removed.</p>
+      <p class="state-detail">A backup was saved in Site settings → Backups.</p>
+      <p class="state-detail">The page will reload automatically.</p>
+    </div>
+  </div>
+
+  <div id="view-error" hidden>
+    <div class="state">
+      <div class="icon-big icon-ko">!</div>
+      <p class="state-msg">Something went wrong.</p>
+      <p class="state-detail" id="error-msg"></p>
+    </div>
+  </div>
+
+  <div id="view-no-designer" hidden>
+    <div class="state">
+      <div class="icon-big icon-info">◎</div>
+      <p class="state-msg">No designer open.</p>
+      <p class="state-detail">Open a page in the<br><a href="https://webflow.com/dashboard" target="_blank">Webflow Designer</a> and click the icon again.</p>
+    </div>
+  </div>
+
+  <div id="view-tab-list" hidden>
+    <p class="tab-section-label">Choose your project</p>
+    <div class="tab-list" id="tab-list"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

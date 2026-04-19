@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Webflow Breakpoint Cleaner",
+  "version": "1.0.0",
+  "description": "Remove breakpoints in Webflow using the current API",
+  "permissions": [
+    "storage",
+    "scripting",
+    "tabs"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "host_permissions": [
+    "https://webflow.com/design*",
+    "https://*.design.webflow.com/*"
+  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://webflow.com/design*",
+        "https://*.design.webflow.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["injected.js", "src/*.js", "icons/*.png"],
+      "matches": ["https://*.webflow.com/*"]
+    }
+  ]
+}
