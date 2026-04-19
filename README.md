@@ -35,17 +35,18 @@ See [CLAUDE.md](CLAUDE.md) for the full technical breakdown (message flow, API e
 ## Project layout
 
 ```
-manifest.json      Chrome extension manifest (MV3)
-content.js         Content script — bridges popup ↔ injected script
-injected.js        Page-world script — talks to Webflow APIs + WebSocket
-popup.html         Toolbar popup markup
-popup.js           Popup controller (tab discovery, rendering, dispatch)
-src/
-  api.js           Authenticated wrappers around the Designer REST API
-  constants.js     Additional-breakpoint list and UI metadata
-  env.js           Reads site name / page id / CSRF / app id / session id
-  remover.js       Breakpoint removal + retry logic
-icons/             Toolbar and per-breakpoint icons
+webflow-breakpoint-cleaner/
+├── manifest.json          Chrome extension manifest (MV3)
+├── content.js             Content script — bridges popup ↔ injected script
+├── injected.js            Page-world script — talks to Webflow APIs + WebSocket
+├── popup.html             Toolbar popup markup
+├── popup.js               Popup controller (tab discovery, rendering, dispatch)
+├── src/
+│   ├── api.js             Authenticated wrappers around the Designer REST API
+│   ├── constants.js       Additional-breakpoint list and UI metadata
+│   ├── env.js             Reads site name / page id / CSRF / app id / session id
+│   └── remover.js         Breakpoint removal + retry logic
+└── icons/                 Toolbar and per-breakpoint icons
 ```
 
 ## Credits
