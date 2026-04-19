@@ -152,6 +152,16 @@ Shown in the popup under each breakpoint as `N elements, M styles`.
 - **Page id not resolvable** → the removal throws before any mutation (`"No page ID found. Open a page in the Designer first."`).
 - **CSRF / session expired** → `updateDOM` / `updateStyles` reject with the API response text; surfaced to the user via `WF_ERROR`.
 
+## Commits
+
+Conventional Commits obligatoire :
+
+- `feat:` nouvelle fonctionnalite
+- `fix:` correction de bug
+- `chore:` maintenance, deps, config
+- `docs:` documentation
+- `refactor:` restructuration sans changement fonctionnel
+
 ## Development notes
 
 - Every source file must start with a `/* ─── … ─── */` block header (3–6 lines) describing what the file owns and any non-obvious constraint (e.g. why it runs in the page world, what side-effect it installs). Keep it updated when the responsibility of a file changes.

@@ -48,6 +48,10 @@ src/
 icons/             Toolbar and per-breakpoint icons
 ```
 
+## Credits
+
+Made by [Pierre-Louis Design](https://www.pierrelouis.design/)
+
 ## Caveats
 
 - Relies on Webflow's **private** Designer API and WebSocket protocol. A Webflow-side change may break the extension; re-inspecting the designer traffic is usually enough to adapt.
