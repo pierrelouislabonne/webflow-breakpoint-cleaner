@@ -13,7 +13,7 @@ import { ADDITIONAL_BREAKPOINTS, BREAKPOINT_META } from './src/constants.js';
 
 captureSocket();
 
-window.postMessage({ type: 'WF_READY' }, '*');
+window.postMessage({ type: 'WF_READY' }, window.location.origin);
 
 window.addEventListener('message', async (event) => {
   if (event.source !== window) return;
@@ -23,14 +23,14 @@ window.addEventListener('message', async (event) => {
     try {
       const siteName = getSiteName();
       if (!siteName) {
-        window.postMessage({ type: 'WF_ERROR', message: 'No designer open' }, '*');
+        window.postMessage({ type: 'WF_ERROR', message: 'No designer open' }, window.location.origin);
         return;
       }
       const pageId = getPageId();
       const domData = await fetchDOM(pageId);
       const actualPageId = pageId || domData.pageId;
       if (!actualPageId) {
-        window.postMessage({ type: 'WF_ERROR', message: 'No page open' }, '*');
+        window.postMessage({ type: 'WF_ERROR', message: 'No page open' }, window.location.origin);
         return;
       }
       const present = Object.keys(domData.styles?.data?.breakpoints || {});
@@ -40,20 +40,20 @@ window.addEventListener('message', async (event) => {
         inSite: present.includes(bp),
         impact: present.includes(bp) ? computeImpact(domData, bp) : null,
       }));
-      window.postMessage({ type: 'WF_BREAKPOINTS_DATA', breakpoints, siteName, pageId: actualPageId }, '*');
+      window.postMessage({ type: 'WF_BREAKPOINTS_DATA', breakpoints, siteName, pageId: actualPageId }, window.location.origin);
     } catch (err) {
-      window.postMessage({ type: 'WF_ERROR', message: err.message }, '*');
+      window.postMessage({ type: 'WF_ERROR', message: err.message }, window.location.origin);
     }
   }
 
   if (event.data?.type === 'WF_REMOVE_BREAKPOINTS') {
     try {
       await removeBreakpoints(event.data.breakpoints, (msg) => {
-        window.postMessage({ type: 'WF_REMOVE_PROGRESS', message: msg }, '*');
+        window.postMessage({ type: 'WF_REMOVE_PROGRESS', message: msg }, window.location.origin);
       }, { pageId: event.data.pageId });
-      window.postMessage({ type: 'WF_REMOVE_DONE' }, '*');
+      window.postMessage({ type: 'WF_REMOVE_DONE' }, window.location.origin);
     } catch (err) {
-      window.postMessage({ type: 'WF_ERROR', message: err.message }, '*');
+      window.postMessage({ type: 'WF_ERROR', message: err.message }, window.location.origin);
     }
   }
 });

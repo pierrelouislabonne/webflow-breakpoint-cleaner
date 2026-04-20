@@ -20,7 +20,7 @@
   chrome.runtime.onMessage.addListener((message) => {
     if (['WF_GET_BREAKPOINTS', 'WF_REMOVE_BREAKPOINTS'].includes(message.type)) {
       if (injectedReady) {
-        window.postMessage(message, '*');
+        window.postMessage(message, window.location.origin);
       } else {
         pendingMessage = message;
       }
@@ -34,7 +34,7 @@
     if (event.data?.type === 'WF_READY') {
       injectedReady = true;
       if (pendingMessage) {
-        window.postMessage(pendingMessage, '*');
+        window.postMessage(pendingMessage, window.location.origin);
         pendingMessage = null;
       }
       return;

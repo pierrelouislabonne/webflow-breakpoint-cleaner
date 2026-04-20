@@ -170,7 +170,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
     return;
   }
 
-  chrome.tabs.query({}, (tabs) => {
+  chrome.tabs.query({ url: ['https://webflow.com/design*', 'https://*.design.webflow.com/*'] }, (tabs) => {
     const designerTabs = tabs.filter((t) => isDesigner(t.url));
     if (designerTabs.length >= 1) {
       renderTabList(designerTabs);
