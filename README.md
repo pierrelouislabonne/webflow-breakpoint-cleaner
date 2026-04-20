@@ -30,7 +30,19 @@ If several Designer tabs are open, the popup lets you pick which one to act on. 
 
 ## How it works
 
-See [CLAUDE.md](CLAUDE.md) for the full technical breakdown (message flow, API endpoints, WebSocket frame format, module layout).
+Webflow's Designer runs entirely in the browser, authenticated via session cookies and a CSRF token. The extension injects a script into that page context so it can reuse the live session — no OAuth, no separate login.
+
+When you click **Remove**, three things happen in sequence:
+
+1. **REST API mutation** — the extension fetches the current site DOM, strips the target breakpoints from every style block and element, then posts the result back to Webflow's private API. This is what survives a hard refresh.
+
+2. **Live Designer update** — the Designer's real-time state is synced through a multiplayer WebSocket (`mp.use1.webflow.com`). The extension captures that socket and sends a `siteData:update` event so the breakpoint tabs disappear immediately, without waiting for a reload.
+
+3. **Backup snapshot** — every removal creates a named backup under *Site settings → Backups*, so you can roll back if needed.
+
+The extension handles version conflicts automatically (HTTP 409/412): it refetches the latest DOM and retries up to three times before surfacing an error.
+
+For the full technical breakdown (message flow, API endpoints, WebSocket frame format, module layout) see [CLAUDE.md](CLAUDE.md).
 
 ## Project layout
 
@@ -45,6 +57,7 @@ webflow-breakpoint-cleaner/
 │   ├── api.js             Authenticated wrappers around the Designer REST API
 │   ├── constants.js       Additional-breakpoint list and UI metadata
 │   ├── env.js             Reads site name / page id / CSRF / app id / session id
+│   ├── multiplayer.js     WebSocket capture + Socket.io frame builder
 │   └── remover.js         Breakpoint removal + retry logic
 └── icons/                 Toolbar and per-breakpoint icons
 ```
