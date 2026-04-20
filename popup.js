@@ -122,6 +122,11 @@ chrome.runtime.onMessage.addListener((message) => {
   }
 });
 
+document.getElementById('reload-page-btn').addEventListener('click', () => {
+  if (activeTabId) chrome.tabs.reload(activeTabId);
+  window.close();
+});
+
 document.getElementById('confirm').addEventListener('click', () => {
   if (!activeTabId) return;
   const selected = [...document.querySelectorAll('#bp-list .bp-item.selected')].map(li => li.dataset.bp);
