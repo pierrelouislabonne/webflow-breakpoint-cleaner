@@ -12,6 +12,12 @@ Removal is persisted via the private Designer API and pushed to the live Designe
 
 ## Install
 
+**From the Chrome Web Store (recommended):**
+
+[Install Webflow Breakpoint Cleaner](https://chromewebstore.google.com/detail/webflow-breakpoint-cleane/peijpiaficnlekipfgkffcjmibplfapj)
+
+**Or load manually (developer mode):**
+
 1. Clone or download this repository.
 2. Open `chrome://extensions` in Chrome (or a Chromium-based browser).
 3. Enable **Developer mode** (top-right toggle).
