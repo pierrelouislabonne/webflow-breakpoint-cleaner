@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Webflow Breakpoint Cleaner",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Remove the extra desktop breakpoints (XXL, XL, Large) that Webflow lets you enable but not delete from its Designer UI.",
   "permissions": [
     "storage",

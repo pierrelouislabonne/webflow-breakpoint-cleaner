@@ -20,4 +20,4 @@ jobs:
             --exclude "*.DS_Store"
 
       - name: Publish to Chrome Web Store
-        run: npx chrome-webstore-upload-cli upload --source extension.zip --extension-id ${{ secrets.EXTENSION_ID }} --client-id ${{ secrets.CLIENT_ID }} --client-secret ${{ secrets.CLIENT_SECRET }} --refresh-token ${{ secrets.REFRESH_TOKEN }}
+        run: npx chrome-webstore-upload-cli upload --source extension.zip --extension-id ${{ secrets.EXTENSION_ID }} --client-id ${{ secrets.CLIENT_ID }} --client-secret ${{ secrets.CLIENT_SECRET }} --refresh-token ${{ secrets.REFRESH_TOKEN }} --auto-publish
